@@ -6,6 +6,7 @@ import os
 sys.path.append(os.getcwd())
 from config import *
 from models import *
+from keras.preprocessing.image import ImageDataGenerator
 
 # 경로 추가
 
@@ -17,9 +18,9 @@ test_datagen = ImageDataGenerator(rescale=1./255)
 #train_generator = train_datagen.flow_from_directory('data/train', target_size=(64, 64), batch_size=128, class_mode='categorical')
 #val_generator = val_datagen.flow_from_directory('data/val', target_size=(64, 64), batch_size=128, class_mode='categorical')
 
-train_generator = train_datagen.flow_from_directory('C:/Users/YY/Dropbox/data/train', target_size=(64, 64), batch_size=128, class_mode='categorical')
-val_generator = val_datagen.flow_from_directory('C:/Users/YY/Dropbox/data/val', target_size=(64, 64), batch_size=128, class_mode='categorical')
-test_generator = test_datagen.flow_from_directory('C:/Users/YY/Dropbox/data/test', target_size=(64, 64), batch_size=1, class_mode='categorical')
+train_generator = train_datagen.flow_from_directory('data/train', target_size=(64, 64), batch_size=128, class_mode='categorical')
+val_generator = val_datagen.flow_from_directory('data/val', target_size=(64, 64), batch_size=128, class_mode='categorical')
+test_generator = test_datagen.flow_from_directory('data/test', target_size=(64, 64), batch_size=1, class_mode='categorical')
 
 
 # Class 확인
@@ -43,7 +44,7 @@ show_loss_graph(history=history)
 
 # Weight 저장
 # model.save_weights('weights/WEIGHTS.h5')
-model.load_weights('weights/WEIGHTS3.h5')
+model.load_weights('weights/current_weight.h5')
 
 """
 img = image.load_img('C:/Users/YY/Dropbox/data/test/s.jpg', target_size=(64, 64))
@@ -57,23 +58,8 @@ output = get_output([INPUT, 1])[0]
 np.argsort(output[0])[::-1][0:5]
 """
 
-
 # 테스트 결과 출력
 output = model.predict_generator(test_generator, verbose=0)
 dic = test_generator.class_indices
 idx = np.argsort(output, axis=1)[0][::-1][0]
 print("Test 이미지는", list(dic.keys())[idx], "입니다")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
