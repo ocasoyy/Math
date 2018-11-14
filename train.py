@@ -43,11 +43,11 @@ history = model.fit_generator(train_generator, steps_per_epoch=353, epochs=1,
 show_loss_graph(history=history)
 
 # Weight 저장
-# model.save_weights('weights/WEIGHTS.h5')
-model.load_weights('weights/current_weight.h5')
+# model.save_weights('data/weights/WEIGHTS.h5')
+model.load_weights('data/weights/1.0.h5')
 
 """
-img = image.load_img('C:/Users/YY/Dropbox/data/test/s.jpg', target_size=(64, 64))
+img = image.load_img('data/test/phi/test.jpg', target_size=(64, 64))
 img_input = image.img_to_array(img)/255.
 INPUT = K.expand_dims(img_input, axis=0)
 model.predict(INPUT, steps=1)
@@ -63,3 +63,7 @@ output = model.predict_generator(test_generator, verbose=0)
 dic = test_generator.class_indices
 idx = np.argsort(output, axis=1)[0][::-1][0]
 print("Test 이미지는", list(dic.keys())[idx], "입니다")
+
+
+
+
