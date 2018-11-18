@@ -32,6 +32,7 @@ K.set_image_data_format('channels_last')
 
 # 학습
 # C = Config()
+
 model = ResNet50(input_shape=(64, 64, 3), classes=29)
 model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'top_k_categorical_accuracy'])
 early_stop = EarlyStopping(monitor='val_loss', min_delta=0, patience=5, verbose=0, mode='auto')
@@ -56,14 +57,11 @@ get_output = K.function([model.layers[0].input, K.learning_phase()], [model.laye
 # test mode = 0
 output = get_output([INPUT, 1])[0]
 np.argsort(output[0])[::-1][0:5]
-"""
 
 # 테스트 결과 출력
 output = model.predict_generator(test_generator, verbose=0)
 dic = test_generator.class_indices
 idx = np.argsort(output, axis=1)[0][::-1][0]
 print("Test 이미지는", list(dic.keys())[idx], "입니다")
-
-
-
+"""
 
