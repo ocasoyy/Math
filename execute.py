@@ -11,24 +11,25 @@ from keras.preprocessing.image import ImageDataGenerator
 import pymysql
 
 # MySQL Connection 연결
-conn = pymysql.connect(host='localhost', user='tester', password='',
-                       db='testdb', charset='utf8')
+conn = pymysql.connect(host='ec2-52-34-245-98.us-west-2.compute.amazonaws.com',
+                       user='pmauser', password='gongmo2018',
+                       db='PhoneInfo', charset='utf8')
 
-# Connection 으로부터 Cursor 생성
-curs = conn.cursor( )
+cursor = conn.cursor()
 
 # SQL문 실행
-sql = "select * from customer"
-curs.execute(sql)
+sql = "select * from PhoneInfo"
+cursor.execute(sql)
+cursor.execute("SHOW TABLES")
 
 # 데이타 Fetch
-rows = curs.fetchall( )
-print(rows)  # 전체 rows
-# print(rows[0])  # 첫번째 row: (1, '김정수', 1, '서울')
-# print(rows[1])  # 두번째 row: (2, '강수정', 2, '서울')
+rows = cursor.fetchall()
+print(rows)
 
-# Connection 닫기
-conn.close( )
+# conn.commit()
+
+# DB 연결 닫기
+conn.close()
 
 
 
