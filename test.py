@@ -28,11 +28,12 @@ def main(model):
     idx = np.argsort(output, axis=1)[0][::-1][0]
     indices = np.argsort(output, axis=1)[0][::-1][0:6]
 
-    print("Test 이미지는", list(dic.keys())[idx], "입니다")
-    print("==============================================")
-    print("찾으시는 기호는 아래 중에 있습니다.")
+    # print("Test 이미지는", list(dic.keys())[idx], "입니다")
+    # print("==============================================")
+    # print("찾으시는 기호는 아래 중에 있습니다.")
     for index in indices:
-        print(list(dic.keys())[index])
+        # print(list(dic.keys())[index])
+        print(index)
 
 
 if __name__ == '__main__':
