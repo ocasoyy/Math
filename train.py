@@ -41,11 +41,11 @@ history = model.fit_generator(train_generator, steps_per_epoch=353, epochs=1,
                               validation_data=val_generator, validation_steps=3, callbacks=[early_stop])
 
 # 학습과정 살펴보기
-show_loss_graph(history=history)
+# show_loss_graph(history=history)
 
 # Weight 저장
 # model.save_weights('data/weights/WEIGHTS.h5')
-model.load_weights('data/weights/1.0.h5')
+# model.load_weights('data/weights/1.0.h5')
 
 """
 img = image.load_img('data/test/phi/test.jpg', target_size=(64, 64))
