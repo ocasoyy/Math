@@ -9,6 +9,12 @@ from models import *
 from keras.preprocessing.image import ImageDataGenerator
 
 import pymysql
+from time import sleep
+
+# 테스트 모델
+model = ResNet50(input_shape=(64, 64, 3), classes=29)
+model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy', 'top_k_categorical_accuracy'])
+model.load_weights('data/weights/1.0.h5')
 
 # MySQL Connection 연결
 conn = pymysql.connect(host='ec2-52-34-245-98.us-west-2.compute.amazonaws.com',
@@ -20,18 +26,27 @@ cursor = conn.cursor()
 # SQL문 실행
 sql = "select * from PhoneInfo"
 cursor.execute(sql)
-cursor.execute("SHOW TABLES")
+# cursor.execute("SHOW TABLES")
 
-# 데이타 Fetch
-rows = cursor.fetchall()
-print(rows)
+
+# Signal 처리
+while True:
+    past = len(rows)
+    sleep(1)
+    rows = cursor.fetchall()
+    current = len(rows)
+    if past == current:
+        # img = rows[-1][0]    # 현재는 ID를 출력함, img가 (64, 64)임을 가정함
+        img = image.load_img('data/test/phi/test.jpg', target_size=(64, 64))
+        img_input = image.img_to_array(img)/255.
+        INPUT = K.expand_dims(img_input, axis=0)
+        output = model.predict(INPUT, steps=1)     # model output: (1, 29)
+        result = np.argsort(output[0])[::-1][0:6]  # 예측 번호(기호)를 담은 np.array, (6, )
+
+        update_sql = "Result 테이블에서 결과를 update하라"
+        cursor.execute(update_sql)
+
 
 # conn.commit()
-
 # DB 연결 닫기
-conn.close()
-
-
-
-
-
+# conn.close()
