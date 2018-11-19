@@ -8,7 +8,9 @@ from config import *
 from models import *
 from keras.preprocessing.image import ImageDataGenerator
 
-# 경로 추가
+# GPU 체크
+from tensorflow.python.client import device_lib
+print(device_lib.list_local_devices())
 
 # Data Load
 train_datagen = ImageDataGenerator(rescale=1./255)
