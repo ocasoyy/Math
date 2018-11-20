@@ -48,3 +48,8 @@ history = model.fit_generator(train_generator, steps_per_epoch=353, epochs=1,
 # Weight 저장
 # model.save_weights('data/weights/WEIGHTS.h5')
 # model.load_weights('data/weights/1.0.h5')
+
+# 이미지 크기 바꾸기
+# img_path = "data/test/phi/test.jpg"
+# img = image.load_img(img_path, target_size=(64, 64))
+# img.save('data/output.jpg')

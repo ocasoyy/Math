@@ -8,8 +8,6 @@ from config import *
 from models import *
 from keras.preprocessing.image import ImageDataGenerator
 
-import pymysql
-from time import sleep
 
 # 테스트 모델
 model = ResNet50(input_shape=(64, 64, 3), classes=29)
@@ -39,8 +37,13 @@ while True:
     current = len(rows)
     if past == current:
         # img = rows[-1][0]    # 현재는 ID를 출력함, img가 (64, 64)임을 가정함
-        img = image.load_img('data/test/phi/test.jpg', target_size=(64, 64))
+        # img = image.load_img('data/test/phi/test.jpg', target_size=(64, 64))
+        img_blob = rows[-1][2]
+
+        im = base64.b64decode(img_blob)
+        img = Image.open(BytesIO(im))
         img_input = image.img_to_array(img)/255.
+
         INPUT = K.expand_dims(img_input, axis=0)
         output = model.predict(INPUT, steps=1)     # model output: (1, 29)
         result = np.argsort(output[0])[::-1][0:6]  # 예측 번호(기호)를 담은 np.array, (6, )
@@ -60,21 +63,25 @@ with open('data/output.txt', "wb") as file:
     file.write(data)
 
 
-from PIL import Image
-Image.fromstring(mode, size, data)
-
 text = rows[0][2]
 
-im = Image.frombytes('L', (32, 32), text)
-img_input = image.img_to_array(im)/255.
 
 
+imageFile = open('data/test/phi/phi.jpg', "rb")
+test1 = base64.b64encode(imageFile.read())
+imageFile = open('data/output1.blob', "wb")
+imageFile.write(test1)
+imageFile.close()
+
+imageFile = open('data/test/Delta/delta.jpg', "rb")
+test2 = base64.b64encode(imageFile.read())
+imageFile = open('data/output2.blob', "wb")
+imageFile.write(test2)
+imageFile.close()
 
 
+# blob로 변환한 파일 저장
+# im = base64.b64decode(text)
+# png_recovered = Image.open(BytesIO(im))
+# png_recovered.save("data/output.jpg")
 
-import base64
-imageFile = open('pi.png', "rb")
-
-
-mi_blob= base64.b64encode(imageFile.read())
-mi_blob
