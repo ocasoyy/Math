@@ -24,7 +24,6 @@ cursor = conn.cursor()
 # SQL문 실행
 sql = "select * from PhoneInfo"
 cursor.execute(sql)
-# cursor.execute("SHOW TABLES")
 
 
 # Signal 처리
@@ -35,6 +34,7 @@ while True:
 
     rows = cursor.fetchall()
     current = len(rows)
+    id = str(rows[-1][0])
     if past == current:
         # img = rows[-1][0]    # 현재는 ID를 출력함, img가 (64, 64)임을 가정함
         # img = image.load_img('data/test/phi/test.jpg', target_size=(64, 64))
@@ -48,25 +48,19 @@ while True:
         output = model.predict(INPUT, steps=1)     # model output: (1, 29)
         result = np.argsort(output[0])[::-1][0:6]  # 예측 번호(기호)를 담은 np.array, (6, )
 
-        update_sql = "Result 테이블에서 결과를 update하라"
-        cursor.execute(update_sql)
+        cursor.execute("""UPDATE PhoneInfo
+        SET Result1=%s, Result2=%s, Result3=%s, Result4=%s, Result5=%s, Result6%s
+        WHERE Nickname=%s""", (int(result[0]), int(result[1]), int(result[2]), int(result[3]), int(result[4]), int(result[5]), id))
+
+        conn.commit()
 
 
-# conn.commit()
+
 # DB 연결 닫기
 # conn.close()
 
-with open('data/test/phi/test.jpg', "rb") as file:
-    data = file.read()
 
-with open('data/output.txt', "wb") as file:
-    file.write(data)
-
-
-text = rows[0][2]
-
-
-
+"""
 imageFile = open('data/test/phi/phi.jpg', "rb")
 test1 = base64.b64encode(imageFile.read())
 imageFile = open('data/output1.blob', "wb")
@@ -78,10 +72,9 @@ test2 = base64.b64encode(imageFile.read())
 imageFile = open('data/output2.blob', "wb")
 imageFile.write(test2)
 imageFile.close()
-
+"""
 
 # blob로 변환한 파일 저장
 # im = base64.b64decode(text)
 # png_recovered = Image.open(BytesIO(im))
 # png_recovered.save("data/output.jpg")
-
