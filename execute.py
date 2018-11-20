@@ -31,8 +31,10 @@ cursor.execute(sql)
 
 # Signal 처리
 while True:
+    rows = cursor.fetchall()
     past = len(rows)
     sleep(1)
+
     rows = cursor.fetchall()
     current = len(rows)
     if past == current:
@@ -50,3 +52,29 @@ while True:
 # conn.commit()
 # DB 연결 닫기
 # conn.close()
+
+with open('data/test/phi/test.jpg', "rb") as file:
+    data = file.read()
+
+with open('data/output.txt', "wb") as file:
+    file.write(data)
+
+
+from PIL import Image
+Image.fromstring(mode, size, data)
+
+text = rows[0][2]
+
+im = Image.frombytes('L', (32, 32), text)
+img_input = image.img_to_array(im)/255.
+
+
+
+
+
+import base64
+imageFile = open('pi.png', "rb")
+
+
+mi_blob= base64.b64encode(imageFile.read())
+mi_blob
