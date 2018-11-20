@@ -48,10 +48,8 @@ while True:
         output = model.predict(INPUT, steps=1)     # model output: (1, 29)
         result = np.argsort(output[0])[::-1][0:6]  # 예측 번호(기호)를 담은 np.array, (6, )
 
-        cursor.execute("""UPDATE PhoneInfo
-        SET Result1=%s, Result2=%s, Result3=%s, Result4=%s, Result5=%s, Result6%s
-        WHERE Nickname=%s""", (int(result[0]), int(result[1]), int(result[2]), int(result[3]), int(result[4]), int(result[5]), id))
-
+        update_sql = """UPDATE PhoneInfo SET Result1=%s, Result2=%s, Result3=%s, Result4=%s, Result5=%s, Result6=%s WHERE Nickname=%s"""
+        cursor.execute(update_sql, (int(result[0]), int(result[1]), int(result[2]), int(result[3]), int(result[4]), int(result[5]), id))
         conn.commit()
 
 
