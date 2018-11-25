@@ -18,28 +18,33 @@ model.load_weights('data/weights/1.0.h5')
 conn = pymysql.connect(host='ec2-52-34-245-98.us-west-2.compute.amazonaws.com',
                        user='pmauser', password='gongmo2018',
                        db='PhoneInfo', charset='utf8')
-
 cursor = conn.cursor()
 
-# SQL문 실행
-sql = "select * from PhoneInfo"
-cursor.execute(sql)
-
+# SQL문
+sql = "select count(*) from PhoneInfo"
 
 # Signal 처리
 while True:
-    rows = cursor.fetchall()
-    past = len(rows)
+    conn = pymysql.connect(host='ec2-52-34-245-98.us-west-2.compute.amazonaws.com',
+                           user='pmauser', password='gongmo2018',
+                           db='PhoneInfo', charset='utf8')
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    past = cursor.fetchone()[0]
     sleep(1)
 
-    rows = cursor.fetchall()
-    current = len(rows)
-    id = str(rows[-1][0])
-    if past == current:
-        # img = rows[-1][0]    # 현재는 ID를 출력함, img가 (64, 64)임을 가정함
+    if past == 1:
+        current = 1
+
+    if past != current:
+        print("Taking care of Signals...")
+        execute_sql = "select * from PhoneInfo"
+        cursor.execute(execute_sql)
+        rows = cursor.fetchall()
+        id = str(rows[-1][0])
+
         # img = image.load_img('data/test/phi/test.jpg', target_size=(64, 64))
         img_blob = rows[-1][2]
-
         im = base64.b64decode(img_blob)
         img = Image.open(BytesIO(im))
         img_input = image.img_to_array(img)/255.
@@ -51,6 +56,41 @@ while True:
         update_sql = """UPDATE PhoneInfo SET Result1=%s, Result2=%s, Result3=%s, Result4=%s, Result5=%s, Result6=%s WHERE Nickname=%s"""
         cursor.execute(update_sql, (int(result[0]), int(result[1]), int(result[2]), int(result[3]), int(result[4]), int(result[5]), id))
         conn.commit()
+        print("Result has been inserted")
+
+
+    print("Checking if table has benn changed...")
+    conn = pymysql.connect(host='ec2-52-34-245-98.us-west-2.compute.amazonaws.com',
+                           user='pmauser', password='gongmo2018',
+                           db='PhoneInfo', charset='utf8')
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    current = cursor.fetchone()[0]
+
+    print("the length of rows are as follows...:", past, ' ', current)
+
+    if past != current:
+        print("Taking care of Signals...")
+        execute_sql = "select * from PhoneInfo"
+        cursor.execute(execute_sql)
+        rows = cursor.fetchall()
+        id = str(rows[-1][0])
+
+        # img = image.load_img('data/test/phi/test.jpg', target_size=(64, 64))
+        img_blob = rows[-1][2]
+        im = base64.b64decode(img_blob)
+        img = Image.open(BytesIO(im))
+        img_input = image.img_to_array(img)/255.
+
+        INPUT = K.expand_dims(img_input, axis=0)
+        output = model.predict(INPUT, steps=1)     # model output: (1, 29)
+        result = np.argsort(output[0])[::-1][0:6]  # 예측 번호(기호)를 담은 np.array, (6, )
+
+        update_sql = """UPDATE PhoneInfo SET Result1=%s, Result2=%s, Result3=%s, Result4=%s, Result5=%s, Result6=%s WHERE Nickname=%s"""
+        cursor.execute(update_sql, (int(result[0]), int(result[1]), int(result[2]), int(result[3]), int(result[4]), int(result[5]), id))
+        conn.commit()
+        print("Result has been inserted")
+
 
 
 
